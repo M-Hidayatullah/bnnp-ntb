@@ -66,6 +66,11 @@
                                                     id="{{ $karyawan->id }}">
                                                 <i class="fa fa-trash"></i>
                                             </button>
+
+                                            <a href="{{ route('admin.download.index', $karyawan->id) }}"
+                                               class="btn btn-sm btn-success">
+                                                <i class="fa fa-print"></i>
+                                            </a>
                                         </td>
                                     </tr>
 

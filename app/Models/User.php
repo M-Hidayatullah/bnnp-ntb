@@ -9,10 +9,11 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Laravel\Fortify\TwoFactorAuthenticatable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable;
+    use HasApiTokens, HasFactory, Notifiable, TwoFactorAuthenticatable, HasRoles;
 
     /**
      * The attributes that are mass assignable.
@@ -23,6 +24,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -49,5 +51,12 @@ class User extends Authenticatable
         return Attribute::make(
             get: fn ($value) => 'https://ui-avatars.com/api/?name=' . str_replace(' ', '+', $this->name) . '&background=4e73df&color=ffffff&size=100',
         );
+    }
+
+    public function getPermissionArray()
+    {
+        return $this->getAllPermissions()->mapWithKeys(function($pr){
+            return [$pr['name'] => true];
+        });
     }
 }

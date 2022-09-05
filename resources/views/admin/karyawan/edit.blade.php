@@ -102,6 +102,20 @@
                                         @enderror
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>UPLOAD FILE GAJI BERKALA</label><br>
+                                        <small class="text-danger">file harus pdf dan word ukurannya 2mb bisa dikosongkan jika tidak mau di update</small>
+                                        <input type="file" name="file_kgb" id="file_kgb" value="{{ old('file_kgb', $karyawan->file_kgb) }}"
+                                               class="form-control @error('file_kgb') is-invalid @enderror">
+
+                                        @error('file_kgb')
+                                        <div class="invalid-feedback" style="display: block">
+                                            {{ $message }}
+                                        </div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
 
                             <button class="btn btn-primary mr-1 btn-submit" type="submit"><i class="fa fa-paper-plane"></i>

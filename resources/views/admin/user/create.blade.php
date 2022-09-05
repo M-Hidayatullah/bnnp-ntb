@@ -70,6 +70,22 @@
 
                                     </div>
                                 </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label>ROLE</label>
+                                        <select name="role" id="role"
+                                                class="form-control @error('role') is-invalid @enderror">
+                                            <option value="" disabled selected>--Pilih--</option>
+                                            @foreach ($data['role'] as $item)
+                                                <option
+                                                    {{ old('role') == $item ? 'selected' : '' }} value="{{ $item }}"> {{ str_replace('_', ' ', $item) }} </option>
+                                            @endforeach
+                                        </select>
+                                        @error('role')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
                             </div>
 
                             <button class="btn btn-primary mr-1 btn-submit" type="submit"><i class="fa fa-paper-plane"></i>

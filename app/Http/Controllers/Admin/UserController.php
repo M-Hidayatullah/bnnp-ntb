@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 
 class UserController extends Controller
 {
@@ -19,7 +20,16 @@ class UserController extends Controller
 
     public function create()
     {
-        return view('admin.user.create');
+        $role = Collection::empty();
+        $role->add('Admin');
+        $role->add('User');
+
+        $data = Collection::empty();
+        $data->put('role', $role);
+
+        return view('admin.user.create',[
+            'data' => $data,
+        ]);
     }
 
     public function store(Request $request)
@@ -27,7 +37,8 @@ class UserController extends Controller
         $this->validate($request, [
             'name'       => 'required',
             'email'      => 'required|email|unique:users',
-            'password'   => 'required|confirmed'
+            'password'   => 'required|confirmed',
+            'role'       => 'required',
         ]);
 
         //save to DB
@@ -35,6 +46,8 @@ class UserController extends Controller
             'name'       => $request->name,
             'email'      => $request->email,
             'password'   => bcrypt($request->password),
+            'role'       => $request->role,
+            'user_id'    => auth()->user()->id,
         ]);
 
         if($user){
@@ -48,7 +61,15 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
-        return view('admin.user.edit', compact('user'));
+
+        $role = Collection::empty();
+        $role->add('Admin');
+        $role->add('User');
+
+        $data = Collection::empty();
+        $data->put('role', $role);
+
+        return view('admin.user.edit', compact('user', 'data'));
     }
 
     public function update(Request $request, User $user)
@@ -56,7 +77,7 @@ class UserController extends Controller
         $this->validate($request, [
             'name'       => 'required',
             'email'      => 'required|email|unique:users,email,'.$user->id,
-            'password'   => 'required|confirmed'
+            'role'       => 'required',
         ]);
 
         //cek password
@@ -66,7 +87,8 @@ class UserController extends Controller
             $user = User::findOrFail($user->id);
             $user->update([
                 'name'       => $request->name,
-                'email'      => $request->email
+                'email'      => $request->email,
+                'role'       => $request->role,
             ]);
 
         } else {
@@ -77,6 +99,7 @@ class UserController extends Controller
                 'name'       => $request->name,
                 'email'      => $request->email,
                 'password'   => bcrypt($request->password),
+                'role'       => $request->role,
             ]);
         }
 

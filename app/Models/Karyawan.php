@@ -18,6 +18,8 @@ class Karyawan extends Model
         'hak_cuti',
         'jumlah_cuti',
         'sisa_cuti',
-        'keterangan'
+        'keterangan',
+        'file_kgb',
     ];
+
 }

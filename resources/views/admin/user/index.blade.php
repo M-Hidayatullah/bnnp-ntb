@@ -36,6 +36,7 @@
                                     <th scope="col" style="text-align: center;width: 6%">NO.</th>
                                     <th scope="col">NAMA USER</th>
                                     <th scope="col">EMAIL</th>
+                                    <th scope="col">ROLE</th>
                                     <th scope="col" style="width: 15%;text-align: center">AKSI</th>
                                 </tr>
                                 </thead>
@@ -46,6 +47,7 @@
                                             {{ ++$no + ($users->currentPage()-1) * $users->perPage() }}</th>
                                         <td>{{ $user->name }}</td>
                                         <td>{{ $user->email }}</td>
+                                        <td>{{ $user->role }}</td>
                                         <td class="text-center">
                                             <a href="{{ route('admin.user.edit', $user->id) }}"
                                                class="btn btn-sm btn-primary">

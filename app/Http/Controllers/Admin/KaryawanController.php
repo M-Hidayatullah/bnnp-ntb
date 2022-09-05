@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Karyawan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Storage;
 
 class KaryawanController extends Controller
 {
@@ -41,7 +42,13 @@ class KaryawanController extends Controller
             'hak_cuti'   => 'required',
             'jumlah_cuti'   => 'required',
             'keterangan'   => 'required',
+            'file_kgb' => 'required|mimes:pdf,doc,docx|max:2048',
         ]);
+
+        $file_kgb = $request->file('file_kgb');
+        $namekgb = time() . "_" . $file_kgb->getClientOriginalName();
+        $path = 'data/pdf';
+        $file_kgb->move($path, $namekgb);
 
         $sisa_cuti = $request->hak_cuti - $request->jumlah_cuti ;
 
@@ -53,6 +60,7 @@ class KaryawanController extends Controller
             'jumlah_cuti'=> $request->jumlah_cuti,
             'sisa_cuti'  => $sisa_cuti,
             'keterangan' => $request->keterangan,
+            'file_kgb'   => $namekgb
         ]);
 
         if($karyawan){
@@ -85,21 +93,41 @@ class KaryawanController extends Controller
             'hak_cuti'   => 'required',
             'jumlah_cuti'   => 'required',
             'keterangan'   => 'required',
+            'file_kgb' => 'mimes:pdf,doc,docx|max:2048',
         ]);
 
         $sisa_cuti = $request->hak_cuti - $request->jumlah_cuti ;
 
-        $karyawan = Karyawan::findOrFail($karyawan->id);
-        $karyawan->update([
-            'nama'       => $request->nama,
-            'nip'        => $request->nip,
-            'jabatan'    => $request->jabatan,
-            'hak_cuti'   => $request->hak_cuti,
-            'jumlah_cuti'=> $request->jumlah_cuti,
-            'sisa_cuti'  => $sisa_cuti,
-            'keterangan' => $request->keterangan,
-        ]);
+        if($request->file('file_kgb') == "") {
+            $karyawan = Karyawan::findOrFail($karyawan->id);
+            $karyawan->update([
+                'nama'       => $request->nama,
+                'nip'        => $request->nip,
+                'jabatan'    => $request->jabatan,
+                'hak_cuti'   => $request->hak_cuti,
+                'jumlah_cuti'=> $request->jumlah_cuti,
+                'sisa_cuti'  => $sisa_cuti,
+                'keterangan' => $request->keterangan,
+            ]);
+        } else {
+            $file_kgb = $request->file('file_kgb');
+            $namekgb = time() . "_" . $file_kgb->getClientOriginalName();
+            $path = 'data/pdf';
+            $file_kgb->move($path, $namekgb);
 
+            $sisa_cuti = $request->hak_cuti - $request->jumlah_cuti ;
+            $karyawan = Karyawan::findOrFail($karyawan->id);
+            $karyawan->update([
+                'nama'       => $request->nama,
+                'nip'        => $request->nip,
+                'jabatan'    => $request->jabatan,
+                'hak_cuti'   => $request->hak_cuti,
+                'jumlah_cuti'=> $request->jumlah_cuti,
+                'sisa_cuti'  => $sisa_cuti,
+                'keterangan' => $request->keterangan,
+                'file_kgb'   => $namekgb
+            ]);
+        }
         if($karyawan){
             //redirect dengan pesan sukses
             return redirect()->route('admin.karyawan.index')->with(['success' => 'Data Berhasil Diupdate!']);
@@ -114,6 +142,8 @@ class KaryawanController extends Controller
         $karyawan = Karyawan::findOrFail($id);
         $karyawan->delete();
 
+        Storage::delete('data/pdf/'.$karyawan->file_kgb);
+
         if($karyawan){
             return response()->json([
                 'status' => 'success'
@@ -123,5 +153,15 @@ class KaryawanController extends Controller
                 'status' => 'error'
             ]);
         }
+    }
+
+    public function download($id)
+    {
+        $karyawan = Karyawan::findOrFail($id);
+        $myFile = public_path(). "/data/pdf/".$karyawan->file_kgb;
+        $headers = ['Content-Type: application/pdf,doc,docx'];
+        $newName = $karyawan->file_kgb;
+
+        return response()->download($myFile, $newName, $headers);
     }
 }

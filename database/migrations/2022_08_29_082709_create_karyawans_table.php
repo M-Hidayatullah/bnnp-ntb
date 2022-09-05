@@ -22,6 +22,7 @@ return new class extends Migration
             $table->integer('jumlah_cuti');
             $table->integer('sisa_cuti');
             $table->enum('keterangan', ['Aktif', 'Tidak Aktif']);
+            $table->string('file_kgb');
             $table->timestamps();
         });
     }

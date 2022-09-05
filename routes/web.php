@@ -30,5 +30,7 @@ Route::prefix('admin')->group(function () {
         Route::resource('/user', \App\Http\Controllers\Admin\UserController::class, ['except' => ['show'], 'as' => 'admin']);
 
         Route::resource('/karyawan', \App\Http\Controllers\Admin\KaryawanController::class, ['except' => ['show'], 'as' => 'admin']);
+
+        Route::get('/download{id}', [\App\Http\Controllers\Admin\KaryawanController::class, 'download'])->name('admin.download.index');
     });
 });
